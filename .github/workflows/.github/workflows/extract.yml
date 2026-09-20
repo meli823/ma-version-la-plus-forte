@@ -1,4 +1,4 @@
-name: Publier mon application
+name: Test
 
 on:
   push:
@@ -6,53 +6,8 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Récupérer les fichiers
-        uses: actions/checkout@v4
-
-      - name: Extraire l'application
-        run: |
-          rm -rf site
-          mkdir site
-          unzip -o "ma_version_la_plus_forte_version_web.zip" -d site
-
-          if [ ! -f site/index.html ]; then
-            INDEX=$(find site -name "index.html" -type f | head -n 1)
-            if [ -n "$INDEX" ]; then
-              cp "$INDEX" site/index.html
-            fi
-          fi
-
-          test -f site/index.html
-
-      - name: Préparer le site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Publier sur GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-# Déclenchement GitHub Pages
+      - run: echo "GitHub Actions fonctionne"
