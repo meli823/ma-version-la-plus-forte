@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -24,126 +24,65 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extraire l'application
-        shell: bash
         run: |
-          set -euo pipefail
           rm -rf site
           mkdir -p site
-          unzip -o "ma_version_la_plus_forte_version_web.zip" -d site
-
-          if [ ! -f site/index.html ]; then
-            INDEX=$(find site -type f -name "index.html" | head -n 1)
-            if [ -n "$INDEX" ]; then
-              cp "$INDEX" site/index.html
-            fi
-          fi
-
-          test -f site/index.html
+          unzip -o ma_version_la_plus_forte_version_web.zip -d site
           mkdir -p site/videos
 
       - name: Télécharger et convertir les vidéos
-        shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
-          download() {
+          download_video() {
             url="$1"
-            out="$2"
-            tmp="/tmp/video_source"
-
+            output="$2"
             echo "Téléchargement: $url"
-            rm -f "$tmp"
-
-            curl -fL --retry 4 --retry-delay 2 \
-              --connect-timeout 20 --max-time 180 \
-              -A "Mozilla/5.0" "$url" -o "$tmp"
-
-            test -s "$tmp"
-
-            echo "Conversion MP4: $out"
-
-            ffmpeg -y -loglevel error \
-              -i "$tmp" \
-              -c:v libx264 \
-              -preset veryfast \
-              -crf 23 \
-              -c:a aac \
-              -b:a 128k \
-              -movflags +faststart \
-              "site/$out"
-
-            test -s "site/$out"
-            echo "OK: $(du -h "site/$out" | cut -f1)"
+            curl -L --fail --retry 3 -A "Mozilla/5.0" "$url" -o "$output"
           }
 
-          download "https://www.cdc.gov/physicalactivity/videos/Half_squat_IPod_Lg.mp4" \
-            "videos/Half_squat_IPod_Lg_11bceac3.mp4"
+          # Copies Wikimedia Commons des vidéos CDC (domaine public)
+          download_video "https://upload.wikimedia.org/wikipedia/commons/ae/ae5968cdc094db0e74bb29f5d1cd8e71/Muscle_Strengthening_at_Home_-_Half_squat.webm" "site/videos/Half_squat_IPod_Lg_11bceac3.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/18/180b2ebd4c211eb8c0f034620f6b5679/Muscle_Strengthening_at_Home_-_Push-ups.webm" "site/videos/Push-ups_Ipod-Lg_64e6f55a.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/a4/a43a44ce4c18c21aa928e103a9defafd/Muscle_Strengthening_at_Home_-_Superman.webm" "site/videos/Superman_Ipod-Lg_8cf12020.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/44/44a9abf4342d8eea00cb1d36a205da15/Muscle_Strengthening_at_Home_-_Bicep_Curls.webm" "site/videos/Biscep_Curls_Ipod-Lg_d100ffb7.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/91/91ee2a053f58ffb8803868740042f8c3/Muscle_Strengthening_at_Home_-_Toe_Lift.webm" "site/videos/Toe_Lift_Ipod-Lg_6da68b90.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/f4/f42f2a163977334c035c146f8ec26b84/Muscle_Strengthening_at_Home_-_Sit-ups.webm" "site/videos/Sit-ups_Ipod-Lg_4598d306.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/b9/b927bf306ad85b2e87995f8ac20d92a0/Muscle_Strengthening_at_Home_-_Overhead_Press.webm" "site/videos/Overhead_Press_Ipod-Lg_4deff683.mp4"
 
-          download "https://www.cdc.gov/physicalactivity/videos/Push-ups_Ipod-Lg.mp4" \
-            "videos/Push-ups_Ipod-Lg_64e6f55a.mp4"
+          # Autres démonstrations Wikimedia Commons
+          download_video "https://upload.wikimedia.org/wikipedia/commons/5/57/Strength_Training_Circuit-_Forward_Lunge.webm" "site/videos/Strength_Training_Circuit-_Forward_Lunge_f4e02206.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/f/f4/Dand_%28_Basic_version_%29.webm" "site/videos/Dand__28_Basic_version__29_005585d7.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/1/16/Basic_single_leg_squat.webm" "site/videos/Basic_single_leg_squat_2ee67629.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/7/7f/Squat_and_Frontal_Raise.webm" "site/videos/Squat_and_Frontal_Raise_4f5d32ca.mp4"
+          download_video "https://upload.wikimedia.org/wikipedia/commons/2/21/Kettlebell_Lunge_and_Twist.webm" "site/videos/Kettlebell_Lunge_and_Twist_9b0a3e74.mp4"
 
-          download "https://www.cdc.gov/physicalactivity/videos/Superman_Ipod-Lg.mp4" \
-            "videos/Superman_Ipod-Lg_8cf12020.mp4"
-
-          download "https://www.cdc.gov/physicalactivity/videos/Biscep_Curls_Ipod-Lg.mp4" \
-            "videos/Biscep_Curls_Ipod-Lg_d100ffb7.mp4"
-
-          download "https://www.cdc.gov/physicalactivity/videos/Toe_Lift_Ipod-Lg.mp4" \
-            "videos/Toe_Lift_Ipod-Lg_6da68b90.mp4"
-
-          download "https://www.cdc.gov/physicalactivity/videos/Sit-ups_Ipod-Lg.mp4" \
-            "videos/Sit-ups_Ipod-Lg_4598d306.mp4"
-
-          download "https://www.cdc.gov/physicalactivity/videos/Overhead_Press_Ipod-Lg.mp4" \
-            "videos/Overhead_Press_Ipod-Lg_4deff683.mp4"
-
-          download "https://upload.wikimedia.org/wikipedia/commons/5/57/Strength_Training_Circuit-_Forward_Lunge.webm" \
-            "videos/Strength_Training_Circuit-_Forward_Lunge_f4e02206.mp4"
-
-          download "https://upload.wikimedia.org/wikipedia/commons/f/f4/Dand_%28_Basic_version_%29.webm" \
-            "videos/Dand__28_Basic_version__29_005585d7.mp4"
-
-          download "https://upload.wikimedia.org/wikipedia/commons/1/16/Basic_single_leg_squat.webm" \
-            "videos/Basic_single_leg_squat_2ee67629.mp4"
-
-          download "https://upload.wikimedia.org/wikipedia/commons/7/7f/Squat_and_Frontal_Raise.webm" \
-            "videos/Squat_and_Frontal_Raise_4f5d32ca.mp4"
-
-          download "https://upload.wikimedia.org/wikipedia/commons/2/21/Kettlebell_Lunge_and_Twist.webm" \
-            "videos/Kettlebell_Lunge_and_Twist_9b0a3e74.mp4"
+          echo "Conversion en MP4..."
+          for file in site/videos/*.mp4; do
+            tmp="${file%.mp4}.tmp.mp4"
+            ffmpeg -y -i "$file" -c:v libx264 -preset veryfast -crf 23 -c:a aac -movflags +faststart "$tmp"
+            mv "$tmp" "$file"
+          done
 
       - name: Vérifier les vidéos
-        shell: bash
         run: |
-          set -euo pipefail
-
-          count=$(find site/videos -type f -name "*.mp4" | wc -l)
-
-          echo "Vidéos présentes: $count"
-
+          count=$(find site/videos -maxdepth 1 -type f -name '*.mp4' | wc -l)
+          echo "Nombre de vidéos: $count"
           test "$count" -eq 12
 
-          find site/videos \
-            -type f \
-            -name "*.mp4" \
-            -size +10k \
-            -print \
-            -exec ls -lh {} \;
-
-      - name: Préparer le site
+      - name: Préparer GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
 
     steps:
-      - name: Publier sur GitHub Pages
+      - name: Déployer sur GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
