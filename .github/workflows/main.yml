@@ -30,6 +30,11 @@ jobs:
           unzip -o ma_version_la_plus_forte_version_web.zip -d site
           mkdir -p site/videos
 
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Télécharger et convertir les vidéos
         run: |
           set -e
