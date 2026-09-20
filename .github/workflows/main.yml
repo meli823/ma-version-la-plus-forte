@@ -42,13 +42,13 @@ jobs:
           }
 
           # Copies Wikimedia Commons des vidéos CDC (domaine public)
-          download_video "https://upload.wikimedia.org/wikipedia/commons/ae/ae5968cdc094db0e74bb29f5d1cd8e71/Muscle_Strengthening_at_Home_-_Half_squat.webm" "site/videos/Half_squat_IPod_Lg_11bceac3.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/18/180b2ebd4c211eb8c0f034620f6b5679/Muscle_Strengthening_at_Home_-_Push-ups.webm" "site/videos/Push-ups_Ipod-Lg_64e6f55a.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/a4/a43a44ce4c18c21aa928e103a9defafd/Muscle_Strengthening_at_Home_-_Superman.webm" "site/videos/Superman_Ipod-Lg_8cf12020.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/44/44a9abf4342d8eea00cb1d36a205da15/Muscle_Strengthening_at_Home_-_Bicep_Curls.webm" "site/videos/Biscep_Curls_Ipod-Lg_d100ffb7.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/91/91ee2a053f58ffb8803868740042f8c3/Muscle_Strengthening_at_Home_-_Toe_Lift.webm" "site/videos/Toe_Lift_Ipod-Lg_6da68b90.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/f4/f42f2a163977334c035c146f8ec26b84/Muscle_Strengthening_at_Home_-_Sit-ups.webm" "site/videos/Sit-ups_Ipod-Lg_4598d306.mp4"
-          download_video "https://upload.wikimedia.org/wikipedia/commons/b9/b927bf306ad85b2e87995f8ac20d92a0/Muscle_Strengthening_at_Home_-_Overhead_Press.webm" "site/videos/Overhead_Press_Ipod-Lg_4deff683.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Half_squat.webm" "site/videos/Half_squat_IPod_Lg_11bceac3.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Push-ups.webm" "site/videos/Push-ups_Ipod-Lg_64e6f55a.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Superman.webm" "site/videos/Superman_Ipod-Lg_8cf12020.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Bicep_Curls.webm" "site/videos/Biscep_Curls_Ipod-Lg_d100ffb7.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Toe_Lift.webm" "site/videos/Toe_Lift_Ipod-Lg_6da68b90.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Sit-ups.webm" "site/videos/Sit-ups_Ipod-Lg_4598d306.mp4"
+          download_video "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle_Strengthening_at_Home_-_Overhead_Press.webm" "site/videos/Overhead_Press_Ipod-Lg_4deff683.mp4"
 
           # Autres démonstrations Wikimedia Commons
           download_video "https://upload.wikimedia.org/wikipedia/commons/5/57/Strength_Training_Circuit-_Forward_Lunge.webm" "site/videos/Strength_Training_Circuit-_Forward_Lunge_f4e02206.mp4"
