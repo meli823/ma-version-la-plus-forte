@@ -23,23 +23,112 @@ jobs:
       - name: Récupérer les fichiers
         uses: actions/checkout@v4
 
-      - name: Configurer GitHub Pages
-        uses: actions/configure-pages@v5
-
       - name: Extraire l'application
+        shell: bash
         run: |
+          set -euo pipefail
           rm -rf site
-          mkdir site
+          mkdir -p site
           unzip -o "ma_version_la_plus_forte_version_web.zip" -d site
 
           if [ ! -f site/index.html ]; then
-            INDEX=$(find site -name "index.html" -type f | head -n 1)
+            INDEX=$(find site -type f -name "index.html" | head -n 1)
             if [ -n "$INDEX" ]; then
               cp "$INDEX" site/index.html
             fi
           fi
 
           test -f site/index.html
+          mkdir -p site/videos
+
+      - name: Télécharger et convertir les vidéos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          download() {
+            url="$1"
+            out="$2"
+            tmp="/tmp/video_source"
+
+            echo "Téléchargement: $url"
+            rm -f "$tmp"
+
+            curl -fL --retry 4 --retry-delay 2 \
+              --connect-timeout 20 --max-time 180 \
+              -A "Mozilla/5.0" "$url" -o "$tmp"
+
+            test -s "$tmp"
+
+            echo "Conversion MP4: $out"
+
+            ffmpeg -y -loglevel error \
+              -i "$tmp" \
+              -c:v libx264 \
+              -preset veryfast \
+              -crf 23 \
+              -c:a aac \
+              -b:a 128k \
+              -movflags +faststart \
+              "site/$out"
+
+            test -s "site/$out"
+            echo "OK: $(du -h "site/$out" | cut -f1)"
+          }
+
+          download "https://www.cdc.gov/physicalactivity/videos/Half_squat_IPod_Lg.mp4" \
+            "videos/Half_squat_IPod_Lg_11bceac3.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Push-ups_Ipod-Lg.mp4" \
+            "videos/Push-ups_Ipod-Lg_64e6f55a.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Superman_Ipod-Lg.mp4" \
+            "videos/Superman_Ipod-Lg_8cf12020.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Biscep_Curls_Ipod-Lg.mp4" \
+            "videos/Biscep_Curls_Ipod-Lg_d100ffb7.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Toe_Lift_Ipod-Lg.mp4" \
+            "videos/Toe_Lift_Ipod-Lg_6da68b90.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Sit-ups_Ipod-Lg.mp4" \
+            "videos/Sit-ups_Ipod-Lg_4598d306.mp4"
+
+          download "https://www.cdc.gov/physicalactivity/videos/Overhead_Press_Ipod-Lg.mp4" \
+            "videos/Overhead_Press_Ipod-Lg_4deff683.mp4"
+
+          download "https://upload.wikimedia.org/wikipedia/commons/5/57/Strength_Training_Circuit-_Forward_Lunge.webm" \
+            "videos/Strength_Training_Circuit-_Forward_Lunge_f4e02206.mp4"
+
+          download "https://upload.wikimedia.org/wikipedia/commons/f/f4/Dand_%28_Basic_version_%29.webm" \
+            "videos/Dand__28_Basic_version__29_005585d7.mp4"
+
+          download "https://upload.wikimedia.org/wikipedia/commons/1/16/Basic_single_leg_squat.webm" \
+            "videos/Basic_single_leg_squat_2ee67629.mp4"
+
+          download "https://upload.wikimedia.org/wikipedia/commons/7/7f/Squat_and_Frontal_Raise.webm" \
+            "videos/Squat_and_Frontal_Raise_4f5d32ca.mp4"
+
+          download "https://upload.wikimedia.org/wikipedia/commons/2/21/Kettlebell_Lunge_and_Twist.webm" \
+            "videos/Kettlebell_Lunge_and_Twist_9b0a3e74.mp4"
+
+      - name: Vérifier les vidéos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          count=$(find site/videos -type f -name "*.mp4" | wc -l)
+
+          echo "Vidéos présentes: $count"
+
+          test "$count" -eq 12
+
+          find site/videos \
+            -type f \
+            -name "*.mp4" \
+            -size +10k \
+            -print \
+            -exec ls -lh {} \;
 
       - name: Préparer le site
         uses: actions/upload-pages-artifact@v3
